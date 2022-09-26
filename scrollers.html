@@ -25,6 +25,8 @@
             width: 100%;
             overflow: auto;
             transition: transform 1.5s ease;
+            background-color: lightblue;
+            border: 1px solid black;
         }
         .scroll-content {
             height: 101vh;
@@ -69,7 +71,7 @@
         let scrollPosition = 0;
         let windowHeight = window.innerHeight;
         let sections = document.querySelectorAll('.scroll-section');
-        
+
         sections.forEach((section, i) => {
             section.onscroll = handleScroll;
         })
@@ -86,6 +88,17 @@
                 if (index === 0) scrollPosition = 0;
                 else if (index === sections.length - 1) scrollPosition = 100000;
                 else scrollPosition = 1;
+
+                // prevent out of bounds scrolling on mobile
+                if (index < 0) {
+                    index = 0;
+                    scrolling = false;
+                    return;
+                } else if (index >= sections.length) {
+                    index = sections.length - 1;
+                    scrolling = false;
+                    return;
+                }
 
                 // apply transform
                 sections.forEach((section, i) => {
