@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Section Scrollers</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        ::-webkit-scrollbar {
+            display: none;
+        }
+        body {
+            overflow: hidden;
+        }
+        h1 {
+            font-size: 120px;
+        }
+        .scroll-section {
+            height: 100vh;
+            width: 100%;
+            overflow: auto;
+            transition: transform 1.5s ease;
+        }
+        .scroll-content {
+            height: 101vh;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="scroll-section">
+        <div class="scroll-content">
+            <h1>One</h1>
+        </div>
+    </div>
+    <div class="scroll-section">
+        <div class="scroll-content">
+            <h1>Two</h1>
+        </div>
+    </div>
+    <div class="scroll-section">
+        <div class="scroll-content">
+            <h1>Three</h1>
+        </div>
+    </div>
+    <div class="scroll-section">
+        <div class="scroll-content">
+            <h1>Four</h1>
+        </div>
+    </div>
+
+    <script>
+        // reset sections on page load
+        window.onbeforeunload = () => {
+            window.scroll(0, 0);
+            sections.forEach((section, i) => {
+                section.style.transition = `none`;
+                section.style.transform = `translateY(0)`;
+            })
+        }
+
+        let index = 0;
+        let scrolling = false;
+        let scrollPosition = 0;
+        let sections = document.querySelectorAll('.scroll-section');
+        let windowHeight = window.innerHeight;
+
+        sections.forEach((section, i) => {
+            section.onscroll = handleScroll;
+        })
+
+        function handleScroll() {
+            if (!scrolling) {
+                scrolling = true;
+
+                // update index
+                let inc = upOrDown();
+                index += inc;
+
+                // set scroll position
+                if (index === 0) scrollPosition = 0;
+                else if (index === sections.length - 1) scrollPosition = 100000;
+                else scrollPosition = 1;
+
+                // apply transform
+                sections.forEach((section, i) => {
+                    section.style.transform = `translateY(${index * -100}vh)`;
+                })
+
+                // disable scroll, reset position
+                sections[index].style.overflow = 'hidden';
+                sections[index].scroll(0, scrollPosition);
+
+                // enable scroll after delay to ensure scroll momentum = 0
+                setTimeout(() => {
+                    scrolling = false;
+                    sections[index].style.overflowY = 'auto';
+                }, 1500);
+            }
+        }
+
+        function upOrDown() {
+            if (sections[index].scrollTop > scrollPosition) return 1
+            else return -1
+        }
+    </script>
+</body>
+</html>
