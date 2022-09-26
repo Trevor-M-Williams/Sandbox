@@ -80,27 +80,32 @@
             if (!scrolling) {
                 scrolling = true;
 
-                console.log(index, Math.round(sections[index].scrollTop), scrollPosition);
-                
+                console.log(index, sections[index].scrollTop.toFixed(2));
+
                 // update index
                 let inc = upOrDown();
                 index += inc;
 
                 // set scroll position
                 if (index === 0) scrollPosition = 0;
-                else if (index === sections.length - 1) scrollPosition = 100000;
                 else scrollPosition = 1;
 
-                
-
-                // prevent out of bounds scrolling on mobile
+                // prevent out of bounds scrolling
                 if (index < 0) {
                     index = 0;
+                    console.log(index, sections[index].scrollTop.toFixed(2));
                     scrolling = false;
                     return;
                 } else if (index >= sections.length) {
                     index = sections.length - 1;
-                    scrolling = false;
+                    console.log(index, sections[index].scrollTop.toFixed(2));
+                    sections[index].style.overflow = 'hidden';
+                    sections[index].scroll(0, scrollPosition);
+
+                    setTimeout(() => {
+                        scrolling = false;
+                        sections[index].style.overflowY = 'auto';
+                    }, 50);
                     return;
                 }
 
