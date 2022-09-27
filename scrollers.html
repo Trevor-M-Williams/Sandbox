@@ -14,9 +14,6 @@
         ::-webkit-scrollbar {
             display: none;
         }
-        body {
-            overflow: hidden;
-        }
         h1 {
             font-size: 120px;
         }
@@ -80,8 +77,6 @@
             if (!scrolling) {
                 scrolling = true;
 
-                console.log(index, sections[index].scrollTop.toFixed(2));
-
                 // update index
                 let inc = upOrDown();
                 index += inc;
@@ -93,12 +88,10 @@
                 // prevent out of bounds scrolling
                 if (index < 0) {
                     index = 0;
-                    console.log(index, sections[index].scrollTop.toFixed(2));
                     scrolling = false;
                     return;
                 } else if (index >= sections.length) {
                     index = sections.length - 1;
-                    console.log(index, sections[index].scrollTop.toFixed(2));
                     sections[index].style.overflow = 'hidden';
                     sections[index].scroll(0, scrollPosition);
 
