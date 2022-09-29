@@ -54,15 +54,8 @@
     </div>
 
     <script>
-        // reset sections on page load
-        window.onbeforeunload = () => {
-            window.scroll(0, 0);
-            sections.forEach((section, i) => {
-                section.style.transition = `none`;
-                section.style.transform = `translateY(0)`;
-            })
-        }
-
+        document.body.style.overflow = "hidden";
+        
         let index = 0;
         let scrolling = false;
         let scrollPosition = 0;
@@ -72,6 +65,15 @@
         sections.forEach((section, i) => {
             section.onscroll = handleScroll;
         })
+
+        // reset sections on page load
+        window.onbeforeunload = () => {
+            window.scroll(0, 0);
+            sections.forEach((section, i) => {
+                section.style.transition = `none`;
+                section.style.transform = `translateY(0)`;
+            })
+        }
 
         function handleScroll() {
             if (!scrolling) {
