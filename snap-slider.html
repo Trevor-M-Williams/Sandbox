@@ -33,10 +33,12 @@
             transition: height 0.5s ease;
         }
         .scroller {
-            height: 101vh;
+            height: calc(100vh + 2px);
         }
         .scroll-content {
+            background: rgba(0, 0, 0, 0.2);
             height: 100vh;
+            width: 100%;
             position: fixed;
             overflow: hidden;
             transition: height 0.5s ease;
@@ -47,23 +49,17 @@
     <div class="container">
         <div class="scroll-section">
             <div class="scroller">
-                <div class="scroll-content">
-                    <h1>1</h1>
-                </div>
+                <h1>1</h1>
             </div>
         </div>
         <div class="scroll-section">
             <div class="scroller">
-                <div class="scroll-content">
-                    <h1>2</h1>
-                </div>
+                <h1>2</h1>
             </div>
         </div>
         <div class="scroll-section">
             <div class="scroller">
-                <div class="scroll-content">
-                    <h1>3</h1>
-                </div>
+                <h1>3</h1>
             </div>
         </div>
     </div>
@@ -89,7 +85,8 @@
             if (!scrolling) {
                 disableScroll();
                 updateIndex();
-                updateScrollPosition();
+                // updateScrollPosition();
+                scrollPosition = 1;
                 transformSections();
                 resetScroll();
             }
@@ -104,7 +101,9 @@
         }
 
         function resetScroll() {
-            sections[index].scroll(0, scrollPosition);
+            sections.forEach((section) => {
+                section.scroll(0, scrollPosition);
+            })
 
             setTimeout(() => {
                 scrolling = false;
@@ -114,29 +113,26 @@
 
         function transformSections() {
             sections.forEach((section, i) => {
-                if (i < index) {
-                    section.style.height = 0;
-                    contents[i].style.height = 0;
-                } else {
-                    section.style.height = '100vh';
-                    contents[i].style.height = '100vh';
-                }
+                if (i < index) section.style.height = 0;
+                else section.style.height = '100vh';
             })
         }
 
         function updateIndex() {
             let inc = upOrDown();
             index += inc;
+            if (index < 0) index = 0;
+            if (index >= n - 1) index = n -1;
         }
 
-        function updateScrollPosition() {
-            if (index === 0) scrollPosition = 0;
-            else if (index === n - 1) scrollPosition = 100000;
-            else scrollPosition = 1;
-        }
+        // function updateScrollPosition() {
+        //     if (index === 0) scrollPosition = 0;
+        //     else if (index === n - 1) scrollPosition = 10000;
+        //     else scrollPosition = 1;
+        // }
 
         function upOrDown() {
-            if (sections[index].scrollTop > scrollPosition) return 1
+            if (sections[index].scrollTop > scrollPosition) return 1;
             return -1;
         }
     </script>
