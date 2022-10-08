@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New</title>
+    <title>Snap Slider</title>
     <style>
         * {
             margin: 0;
@@ -14,93 +14,124 @@
         ::-webkit-scrollbar {
             display: none;
         }
-        body {
-            height: 200vh;
+        .container {
+            position: relative;
+            height: 100vh;
         }
-        .section {
-            position: fixed;
+        .scroll-section {
+            position: absolute;
+            top: 0;
             height: 100vh;
             width: 100%;
-            transition: all 1500ms ease;
-            overflow: hidden;
+            overflow: auto;
+            transition: height 0.5s ease;
         }
-        h1 {
-            font-size: 120px;
+        .scroller {
+            height: 101vh;
+        }
+        .scroll-content {
+            height: 100vh;
+            position: fixed;
+            overflow: hidden;
+            transition: height 0.5s ease;
         }
     </style>
 </head>
 <body>
-    <div class="section">
-        <h1>1</h1>
-    </div>
-    <div class="section">
-        <h1>2</h1>
-    </div>
-    <div class="section">
-        <h1>3</h1>
+    <div class="container">
+        <div class="scroll-section">
+            <div class="scroller">
+                <div class="scroll-content">
+                    <h1>1</h1>
+                </div>
+            </div>
+        </div>
+        <div class="scroll-section">
+            <div class="scroller">
+                <div class="scroll-content">
+                    <h1>2</h1>
+                </div>
+            </div>
+        </div>
+        <div class="scroll-section">
+            <div class="scroller">
+                <div class="scroll-content">
+                    <h1>3</h1>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
-         window.onbeforeunload = () => {
-            window.scroll(0, 0);
-            setTimeout(() => document.body.style.overflowY = 'auto', 50)
-        }
-
-        let index = 0;
         let scrolling = false;
         let scrollPosition = 0;
+        let index = 0;
 
-        let sections = document.querySelectorAll('.section');
+        let contents = document.querySelectorAll('.scroll-content');
+        let sections = document.querySelectorAll('.scroll-section');
         let n = sections.length;
         let bgs = ['lightblue', 'lightgreen', 'lightyellow'];
 
-        sections.forEach((section, i) => {
-            section.style.zIndex = n - i;
-            section.style.background = bgs[i];
-        })
+        initializeSections()
 
-        window.addEventListener('scroll', handleScroll)
+        function disableScroll() {
+            scrolling = true;
+            sections[index].style.overflow = 'hidden';
+        }
 
         function handleScroll() {
             if (!scrolling) {
-                scrolling = true;
-                document.body.style.overflowY = 'hidden';
-
-                let inc = upOrDown();
-                lastIndex = index;
-                index += inc;
-
-                if (index === 0) scrollPosition = 0;
-                else if (index === sections.length - 1) scrollPosition = 100000;
-                else scrollPosition = 100;
-
-                applyTransform();
-
-                window.scroll(0, scrollPosition);
-
-                console.log(scrollPosition);
-
-                setTimeout(() => {
-                    scrolling = false;
-                    document.body.style.overflowY = 'auto';
-                    let scrollY = Math.round(window.scrollY * 100) / 100;
-                    scrollPosition = scrollY;
-                    console.log(scrollPosition);
-                }, 1500);
+                disableScroll();
+                updateIndex();
+                updateScrollPosition();
+                transformSections();
+                resetScroll();
             }
         }
 
-        function applyTransform() {
+        function initializeSections() {
             sections.forEach((section, i) => {
-                if (i < index) section.style.height = 0;
-                else section.style.height = '100vh';
+                section.style.background = bgs[i];
+                section.style.zIndex = n - i;
+                section.onscroll = handleScroll;
             })
         }
 
+        function resetScroll() {
+            sections[index].scroll(0, scrollPosition);
+
+            setTimeout(() => {
+                scrolling = false;
+                sections[index].style.overflow = 'auto';
+            }, 500);
+        }
+
+        function transformSections() {
+            sections.forEach((section, i) => {
+                if (i < index) {
+                    section.style.height = 0;
+                    contents[i].style.height = 0;
+                } else {
+                    section.style.height = '100vh';
+                    contents[i].style.height = '100vh';
+                }
+            })
+        }
+
+        function updateIndex() {
+            let inc = upOrDown();
+            index += inc;
+        }
+
+        function updateScrollPosition() {
+            if (index === 0) scrollPosition = 0;
+            else if (index === n - 1) scrollPosition = 100000;
+            else scrollPosition = 1;
+        }
+
         function upOrDown() {
-            console.log(scrollPosition);
-            if (window.scrollY > scrollPosition) return 1
-            else return -1
+            if (sections[index].scrollTop > scrollPosition) return 1
+            return -1;
         }
     </script>
 </body>
