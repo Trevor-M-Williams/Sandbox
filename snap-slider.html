@@ -14,15 +14,15 @@
         html {
             scrollbar-width: none;
         }
-        ::-webkit-scrollbar {
+        /* ::-webkit-scrollbar {
             display: none;
-        }
+        } */
         body {
             overflow: hidden;
         }
         .container {
             position: relative;
-            height: 100vh;
+            /* height: 100vh; */
         }
         .scroll-section {
             position: absolute;
@@ -33,15 +33,10 @@
             transition: height 0.5s ease;
         }
         .scroller {
-            height: calc(100vh + 2px);
-        }
-        .scroll-content {
-            background: rgba(0, 0, 0, 0.2);
+            /* absolute & top 0 required for webflow */
+            position: absolute; 
+            top: 0;
             height: 100vh;
-            width: 100%;
-            position: fixed;
-            overflow: hidden;
-            transition: height 0.5s ease;
         }
     </style>
 </head>
@@ -50,11 +45,13 @@
         <div class="scroll-section">
             <div class="scroller">
                 <h1>1</h1>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Nam, repellat. Assumenda accusantium illo iure, soluta reiciendis deleniti error, alias ipsa dolorum tempore impedit commodi ut provident? At quisquam ipsa voluptates culpa ullam in, fuga commodi. Asperiores quas dolore vero delectus fuga fugiat dolores maxime vel possimus. Harum iure laboriosam iusto dolorum? Cumque fuga voluptatum vero ipsum nemo dolores, sed distinctio quos aperiam et aliquam atque debitis, nesciunt sapiente rerum itaque voluptatem. Illo beatae tenetur labore iure magnam, quam doloremque in inventore! Reprehenderit, excepturi eum officiis voluptate tempora debitis accusantium autem magni, quaerat nihil ratione tempore officia deserunt quia saepe atque.</p>
             </div>
         </div>
         <div class="scroll-section">
             <div class="scroller">
                 <h1>2</h1>
+                <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Consequatur quasi nulla veniam necessitatibus architecto? Earum incidunt temporibus, saepe nisi rerum id, officiis ad quasi expedita fuga labore alias itaque. Exercitationem, quam! Neque, voluptas aliquid asperiores, in facilis pariatur quod fugit dolor ducimus atque laborum, similique quasi saepe eaque! Nisi, illo.</p>
             </div>
         </div>
         <div class="scroll-section">
@@ -65,12 +62,12 @@
     </div>
 
     <script>
+        let index = 0;
         let scrolling = false;
         let scrollPosition = 0;
-        let index = 0;
 
-        let contents = document.querySelectorAll('.scroll-content');
         let sections = document.querySelectorAll('.scroll-section');
+        let scrollers = document.querySelectorAll('.scroller');
         let n = sections.length;
         let bgs = ['lightblue', 'lightgreen', 'lightyellow'];
 
@@ -85,16 +82,21 @@
             if (!scrolling) {
                 disableScroll();
                 updateIndex();
-                // updateScrollPosition();
-                scrollPosition = 1;
+                updateScrollPosition();
                 transformSections();
                 resetScroll();
             }
         }
 
         function initializeSections() {
+            scrollers.forEach((scroller, i) => {
+                if (i === n - 1) scroller.style.height = 'calc(100vh + 1px)';
+                else scroller.style.height = 'calc(100vh + 2px)';
+            })
+
             sections.forEach((section, i) => {
                 section.style.background = bgs[i];
+                section.style.position = 'absolute';
                 section.style.zIndex = n - i;
                 section.onscroll = handleScroll;
             })
@@ -122,14 +124,13 @@
             let inc = upOrDown();
             index += inc;
             if (index < 0) index = 0;
-            if (index >= n - 1) index = n -1;
+            else if (index >= n - 1) index = n - 1;
         }
 
-        // function updateScrollPosition() {
-        //     if (index === 0) scrollPosition = 0;
-        //     else if (index === n - 1) scrollPosition = 10000;
-        //     else scrollPosition = 1;
-        // }
+        function updateScrollPosition() {
+            if (index === 0) scrollPosition = 0;
+            else scrollPosition = 1;
+        }
 
         function upOrDown() {
             if (sections[index].scrollTop > scrollPosition) return 1;

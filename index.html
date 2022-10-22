@@ -1,28 +1,154 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sandbox</title>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Fusion Dashboard</title>
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <meta content="Webflow" name="generator" />
+    <link href="css/normalize.css" rel="stylesheet" type="text/css" />
+    <link href="css/webflow.css" rel="stylesheet" type="text/css" />
+    <link href="css/fusion-dashboard.webflow.css" rel="stylesheet" />
     <style>
-        body {
-            display: flex;
-            flex-direction: column;
-        }
-        a {
-            width: auto;
-            text-decoration: none;
-            color: black;
-            margin-right: 10px;
-            font-size: 40px;
-        }
-        a:hover {
-            font-weight: bold;
-        }
+      .top-1 {
+        top: calc(30% + 15px);
+      }
+      .top-2 {
+        top: calc(65% + 30px);
+      }
+      .left-1 {
+        left: calc(15% + 15px);
+      }
+      .left-2 {
+        left: calc(15% + 15px + 27.5% + 7.5px);
+      }
+      .left-3 {
+        left: calc(15% + 15px + 27.5% + 7.5px + 27.5% + 7.5px);
+      }
+      .panel.crisis-log {
+        height: calc(70% - 30px);
+        width: calc(30% - 45px);
+      }
+      .panel.map,
+      .panel.circadian-risk {
+        height: calc(35% - 45px);
+        width: calc(27.5% - 7.5px);
+      }
+      .panel {
+        transition: all 1s ease;
+      }
+      .map-content {
+        height: 100%;
+        width: 100%;
+        position: relative;
+        border: 1px solid #fff;
+      }
+      .fullscreen {
+        top: 10% !important;
+        left: calc(15% + 15px) !important;
+        height: calc(90% - 15px) !important;
+        width: calc(85% - 30px) !important;
+      }
+      .z1 {
+        z-index: 1;
+      }
+      .close-icon {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 24px;
+        font-weight: bold;
+        cursor: pointer;
+      }
     </style>
-</head>
-<body>
-    
-</body>
+  </head>
+  <body>
+    <div class="page-wrapper">
+      <div class="menu"></div>
+      <div class="content">
+        <nav class="nav">
+          <div class="logo">
+            <div class="text-block">FUSION</div>
+          </div>
+          <div class="nav-icons"></div>
+        </nav>
+        <div class="metric-wrapper">
+          <div class="metric"></div>
+          <div class="metric"></div>
+          <div class="metric"></div>
+          <div class="metric _4"></div>
+        </div>
+        <div class="panel chart left-1 top-1">
+          <div class="content-wrapper">
+            <div class="widget-heading">Chart</div>
+          </div>
+        </div>
+        <div class="panel crisis-log top-1 left-3">
+          <div class="content-wrapper">
+            <div class="widget-heading">Crisis Log</div>
+          </div>
+        </div>
+        <div class="panel map top-2 left-1">
+          <div class="content-wrapper">
+            <div class="widget-heading">Map</div>
+          </div>
+        </div>
+        <div class="panel circadian-risk top-2 left-2">
+          <div class="content-wrapper">
+            <div class="widget-heading">Circadian Risk</div>
+          </div>
+        </div>
+        <div class="html-embed w-embed"></div>
+      </div>
+    </div>
+
+    <script>
+      let panel;
+      let panelOpen = false;
+      let panels = document.querySelectorAll(".panel");
+
+      panels.forEach((panel, i) => {
+        panel.style.backgroundColor = `rgb(0, 0, ${i * 20})`;
+        panel.onclick = openPanel;
+      });
+
+      function addCloseIcon() {
+        let div = document.createElement("div");
+        div.classList.add("close-icon");
+        div.textContent = "X";
+        div.onclick = closePanel;
+        setTimeout(() => {
+          panel.children[0].append(div);
+        }, 1000);
+      }
+
+      function closePanel() {
+        removeCloseIcon();
+        panel.classList.remove("fullscreen");
+        setTimeout(() => {
+          panel.classList.remove("z1");
+          panelOpen = false;
+        }, 1000);
+      }
+
+      function openPanel(e) {
+        if (!panelOpen) {
+          panelOpen = true;
+
+          panel = e.target;
+          while (!panel.className.includes("panel")) {
+            panel = panel.parentNode;
+          }
+          panel.classList.add("fullscreen");
+          panel.classList.add("z1");
+
+          addCloseIcon();
+        }
+      }
+
+      function removeCloseIcon() {
+        let closeIcon = document.querySelector(".close-icon");
+        closeIcon.remove();
+      }
+    </script>
+  </body>
 </html>
