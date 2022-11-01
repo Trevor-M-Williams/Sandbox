@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Fusion</title>
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <link href="css/normalize.css" rel="stylesheet" type="text/css" />
+    <link href="css/webflow.css" rel="stylesheet" type="text/css" />
+    <link
+      href="css/fusion-dashboard.webflow.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link href="images/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <link href="images/webclip.png" rel="apple-touch-icon" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      ::-webkit-scrollbar {
+        width: 10px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #888;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+      }
+
+      #map {
+        height: 100%;
+        width: 100%;
+      }
+      #radar-chart {
+        max-height: 100%;
+      }
+
+      .dropdown {
+        background: var(--panelColor);
+        color: var(--textColor);
+        border: none;
+        width: 150px;
+        padding: 5px;
+        margin-right: 20px;
+      }
+
+      #log-panel {
+        background: var(--bgColor);
+        display: flex;
+        flex-direction: column;
+      }
+      .log-header {
+        height: 40px;
+        background: var(--panelColor);
+      }
+      .log-container {
+        height: 37vh;
+        margin-top: 10px;
+        overflow: auto;
+      }
+      .log-item {
+        height: 60px;
+        margin-bottom: 10px;
+        background: var(--panelColor);
+      }
+      .log-item.last {
+        margin-bottom: 0px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-wrapper">
+      <div class="content">
+        <div class="container">
+          <nav class="nav">
+            <select
+              class="dropdown"
+              name="regions"
+              id="regions"
+              onchange="handleRegion()"
+            >
+              <option value="NA">North America</option>
+              <option value="SA">South America</option>
+              <option value="EU">Europe</option>
+              <option value="AF">Africa</option>
+              <option value="AS">Asia</option>
+              <option value="AU">Australia</option>
+            </select>
+            <select class="dropdown" name="data-types" id="data-types">
+              <option value="Threats">Threats</option>
+              <option value="Controls">Controls</option>
+              <option value="Incidents">Incidents</option>
+            </select>
+            <div class="icons">
+              <img
+                src="images/settings.svg"
+                loading="lazy"
+                alt=""
+                class="icon"
+              /><img
+                src="images/person.svg"
+                loading="lazy"
+                alt=""
+                class="icon"
+              />
+            </div>
+          </nav>
+          <div class="panel-grid">
+            <div
+              id="w-node-b190b757-ecbc-25cf-dfdc-7b59ea930d57-b98347ba"
+              class="metric"
+            >
+              <div class="metric-header">
+                <div class="metric-title">Threats</div>
+              </div>
+              <div class="metric-number">12<br />‍</div>
+            </div>
+            <div
+              id="w-node-_06193fa8-ac83-abf1-41c8-792ae61db35a-b98347ba"
+              class="metric"
+            >
+              <div class="metric-header">
+                <div class="metric-title">Controls</div>
+              </div>
+              <div class="metric-number">4<br />‍</div>
+            </div>
+            <div
+              id="w-node-_22cd5f65-26ca-40d2-92a7-94effbb80e77-b98347ba"
+              class="metric"
+            >
+              <div class="metric-header">
+                <div class="metric-title">Incidents</div>
+              </div>
+              <div class="metric-number">80<br />‍</div>
+            </div>
+            <div
+              id="w-node-ab5679ea-6d58-4546-ea14-5f0ebd10302f-b98347ba"
+              class="panel"
+            >
+              <div id="map"></div>
+            </div>
+            <div
+              id="w-node-aff6dd11-51be-6828-7a8b-9b7667d96e81-b98347ba"
+              class="panel"
+            >
+              <canvas id="radar-chart"></canvas>
+            </div>
+            <div id="log-panel" class="panel">
+              <div class="log-header"></div>
+              <div class="log-container">
+                <div class="log-item"></div>
+                <div class="log-item"></div>
+                <div class="log-item"></div>
+                <div class="log-item"></div>
+                <div class="log-item"></div>
+                <div class="log-item"></div>
+                <div class="log-item"></div>
+                <div class="log-item"></div>
+                <div class="log-item"></div>
+                <div class="log-item last"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let coords = {
+        NA: [41.98106482682594, -97.17098777388283],
+        SA: [-12.329661471135353, -58.96272646193693],
+        EU: [51.21217415369905, 18.359664242877887],
+        AF: [11.122968519663935, 20.48123270887287],
+        AS: [37.277761054008515, 88.27974234621125],
+        AU: [-24.25276601835141, 132.8525657777587],
+      };
+      let region = "NA";
+
+      function handleRegion() {
+        let dropdown = document.querySelector("#regions");
+        region = dropdown.value;
+
+        updateMap();
+      }
+
+      function updateMap() {
+        map.setCenter({ lat: coords[region][0], lng: coords[region][1] });
+        map.setZoom(3);
+      }
+    </script>
+
+    <script>
+      const ctx = document.getElementById("radar-chart");
+      const data = {
+        labels: [
+          "Eating",
+          "Drinking",
+          "Sleeping",
+          "Designing",
+          "Coding",
+          "Cycling",
+          "Running",
+        ],
+        datasets: [
+          {
+            label: "Threats",
+            data: [5, 2, 8, 3, 6, 5, 4],
+            fill: true,
+            backgroundColor: "rgba(255, 99, 132, 0.2)",
+            borderColor: "rgb(255, 99, 132)",
+            pointBackgroundColor: "rgb(255, 99, 132)",
+            pointBorderColor: "#fff",
+            pointHoverBackgroundColor: "#fff",
+            pointHoverBorderColor: "rgb(255, 99, 132)",
+          },
+          {
+            label: "Controls",
+            data: [3, 7, 9, 5, 2, 6, 4],
+            fill: true,
+            backgroundColor: "rgba(54, 162, 235, 0.2)",
+            borderColor: "rgb(54, 162, 235)",
+            pointBackgroundColor: "rgb(54, 162, 235)",
+            pointBorderColor: "#fff",
+            pointHoverBackgroundColor: "#fff",
+            pointHoverBorderColor: "rgb(54, 162, 235)",
+          },
+        ],
+      };
+
+      const config = {
+        type: "radar",
+        data: data,
+        options: {
+          elements: {
+            line: {
+              borderWidth: 1,
+            },
+          },
+          plugins: {
+            legend: {
+              labels: {
+                color: "#fff",
+              },
+            },
+          },
+          scales: {
+            r: {
+              angleLines: {
+                color: "#fff",
+                lineWidth: 0.25,
+              },
+              beginAtZero: true,
+              grid: {
+                color: "#fff",
+                lineWidth: 0.25,
+              },
+              pointLabels: {
+                color: "#fff",
+              },
+              ticks: {
+                backdropColor: "#1c2438",
+                color: "#fff",
+              },
+            },
+          },
+        },
+      };
+
+      const myChart = new Chart(ctx, config);
+    </script>
+
+    <script>
+      function initMap() {
+        let position = { lat: 42, lng: -97 };
+        map = new google.maps.Map(document.getElementById("map"), {
+          zoom: 3,
+          center: position,
+          minZoom: 2,
+          disableDefaultUI: true,
+          mapTypeId: "hybrid",
+          restriction: {
+            latLngBounds: {
+              north: 85,
+              south: -80,
+              east: 180,
+              west: -180,
+            },
+          },
+        });
+      }
+    </script>
+
+    <script
+      defer
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA6FRSEdL1435b7MGz5_jdkoi8eHK5H9-k&callback=initMap"
+    ></script>
+  </body>
+</html>
